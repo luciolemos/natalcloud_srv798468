@@ -15,11 +15,13 @@ test('palette switch updates CSS and persists after reload', async ({ page }) =>
   await expect(redButton).toBeVisible();
   await redButton.click();
 
-  await expect(page).toHaveURL(/palette=red/);
   await expect(paletteLink).toHaveAttribute('href', /\/assets\/css\/palettes\/red\.css/);
+  await expect(page.locator('html')).toHaveAttribute('data-palette', 'red');
+  await expect.poll(async () => page.evaluate(() => localStorage.getItem('palette'))).toBe('red');
 
   await page.reload();
   await expect(paletteLink).toHaveAttribute('href', /\/assets\/css\/palettes\/red\.css/);
+  await expect(page.locator('html')).toHaveAttribute('data-palette', 'red');
 });
 
 test('copy toggle navigates to growth and back to soft', async ({ page }) => {
