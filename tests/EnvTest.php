@@ -20,30 +20,33 @@ final class EnvTest extends TestCase
 APP_NAME="NatalCode Test"
 APP_BASE="/natalcode"
 APP_PAGE_TITLE="NatalCode | Teste"
+CONTACT_TO="contato@env.test"
 ENV);
 
         @unlink($this->missingFixturePath);
 
-        unset($_ENV['APP_NAME'], $_ENV['APP_BASE'], $_ENV['APP_PAGE_TITLE'], $_ENV['APP_THEME'], $_ENV['APP_TAGLINE'], $_ENV['EMPTY_VALUE']);
+        unset($_ENV['APP_NAME'], $_ENV['APP_BASE'], $_ENV['APP_PAGE_TITLE'], $_ENV['APP_THEME'], $_ENV['APP_TAGLINE'], $_ENV['EMPTY_VALUE'], $_ENV['CONTACT_TO']);
         putenv('APP_NAME');
         putenv('APP_BASE');
         putenv('APP_PAGE_TITLE');
         putenv('APP_THEME');
         putenv('APP_TAGLINE');
         putenv('EMPTY_VALUE');
+        putenv('CONTACT_TO');
     }
 
     protected function tearDown(): void
     {
         @unlink($this->fixturePath);
         @unlink($this->missingFixturePath);
-        unset($_ENV['APP_NAME'], $_ENV['APP_BASE'], $_ENV['APP_PAGE_TITLE'], $_ENV['APP_THEME'], $_ENV['APP_TAGLINE'], $_ENV['EMPTY_VALUE']);
+        unset($_ENV['APP_NAME'], $_ENV['APP_BASE'], $_ENV['APP_PAGE_TITLE'], $_ENV['APP_THEME'], $_ENV['APP_TAGLINE'], $_ENV['EMPTY_VALUE'], $_ENV['CONTACT_TO']);
         putenv('APP_NAME');
         putenv('APP_BASE');
         putenv('APP_PAGE_TITLE');
         putenv('APP_THEME');
         putenv('APP_TAGLINE');
         putenv('EMPTY_VALUE');
+        putenv('CONTACT_TO');
     }
 
     public function testLoadsEnvValuesFromFile(): void
@@ -71,6 +74,19 @@ ENV);
 
         self::assertArrayNotHasKey('APP_NAME', $_ENV);
         self::assertArrayNotHasKey('APP_BASE', $_ENV);
+    }
+
+    public function testOverridesOnlyWhitelistedKeys(): void
+    {
+        $_ENV['APP_BASE'] = '/from-server';
+        $_ENV['CONTACT_TO'] = 'from-server@example.test';
+        putenv('APP_BASE=/from-server');
+        putenv('CONTACT_TO=from-server@example.test');
+
+        Env::load($this->fixturePath, ['APP_BASE']);
+
+        self::assertSame('/natalcode', $_ENV['APP_BASE'] ?? null);
+        self::assertSame('from-server@example.test', $_ENV['CONTACT_TO'] ?? null);
     }
 
     public function testSkipsCommentLinesAndTrimsQuotesAndWhitespace(): void

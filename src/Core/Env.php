@@ -4,10 +4,18 @@ namespace App\Core;
 
 final class Env
 {
-    public static function load(string $path): void
+    public static function load(string $path, array $overrideKeys = []): void
     {
         if (!is_file($path)) {
             return;
+        }
+
+        $overrideLookup = [];
+        foreach ($overrideKeys as $overrideKey) {
+            $normalized = trim((string) $overrideKey);
+            if ($normalized !== '') {
+                $overrideLookup[$normalized] = true;
+            }
         }
 
         $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -25,7 +33,13 @@ final class Env
             $key = trim($key);
             $value = trim($value, " \t\n\r\0\x0B\"");
 
-            if ($key === '' || isset($_ENV[$key])) {
+            if ($key === '') {
+                continue;
+            }
+
+            $alreadyDefined = array_key_exists($key, $_ENV);
+            $allowOverride = isset($overrideLookup[$key]);
+            if ($alreadyDefined && !$allowOverride) {
                 continue;
             }
 

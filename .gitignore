@@ -4,6 +4,7 @@
 /storage/rate-limit/
 .phpunit.cache/
 .env
+.env.bak-*
 .DS_Store
 .idea/
 .vscode/

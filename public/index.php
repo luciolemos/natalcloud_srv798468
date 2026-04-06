@@ -13,7 +13,19 @@ use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 
 require __DIR__ . '/../src/Core/Env.php';
-Env::load(__DIR__ . '/../.env');
+Env::load(__DIR__ . '/../.env', [
+    'APP_NAME',
+    'APP_MARK',
+    'APP_BADGE',
+    'APP_PAGE_TITLE',
+    'APP_BASE',
+    'APP_PALETTE',
+    'ASSET_VERSION',
+    'GITHUB_URL',
+    'X_URL',
+    'INSTAGRAM_URL',
+    'WHATSAPP_URL',
+]);
 
 $autoload = __DIR__ . '/../vendor/autoload.php';
 if (!is_file($autoload)) {
